@@ -1,36 +1,41 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 // import sortBy from 'sort-by'
-// import escapeRegExp from 'escape-string-regexp'
 import * as BooksAPI from './BooksAPI'
-import BooksResults from './BooksResults'
+import Book from './SingleBook'
+
 
 class AddBook extends Component {
 
   state = {
-    query: ''
+    query: '',
+    queryResults: []
   }
 
   updateQuery = (query) => {
     this.setState({ query: query.trim() }) 
-    console.log(query)
-  }
 
-  // clearQuery = () => {
-  //   this.setState ({ query: ''})
-  // }
+  }
 
   render() {
 
-    const { query } = this.state
-    let searchlist
-
+    const query = this.state.query
+ 
     if (query) {
-      // const match = new RegExp(escapeRegExp(query), 'i')
       BooksAPI.search(query)
         .then(response => {
-          searchlist = response
           console.log(response)
+          console.log(this.props.booklist)
+          response.forEach(newbook => {
+            let findExisting = this.props.booklist.filter(book => book.id === newbook.id)
+            if (findExisting) {
+              newbook.shelf = findExisting.shelf
+            } else {
+              newbook.shelf = "none"
+            }
+          })
+          this.setState({queryResults: response})
+          
         })
         .catch(err => {console.log(err)})
       
@@ -58,9 +63,13 @@ class AddBook extends Component {
             />
         </div>
       </div>
-      
-      <BooksResults booklist={searchlist} changeShelf={this.props.changeShelf} />  
-        
+      <div className="search-books-results">
+        <ol className="books-grid">
+            {this.state.queryResults.map((book) => 
+              <Book book={book} key={book.id} changeShelf={this.props.changeShelf} />
+            )}
+        </ol>
+      </div>
     </div> 
     )
   }

@@ -23,10 +23,24 @@ class App extends React.Component {
   changeShelf(book, shelf) {
     BooksAPI.update(book, shelf)
       .then(response => {
-        book.shelf = shelf;
-        this.setState(state => ({
-          booklist: state.booklist.concat([book])
-        }))
+
+        // if the book was not in our shelf - add it
+        if (book.shelf === "none") {
+          book.shelf = shelf
+          this.setState({
+            booklist: this.state.booklist.concat([book])
+          })
+        
+        } else
+
+          // if the book gets 'none' status - remove it from our list
+          if (shelf === "none") {
+            book.shelf = shelf
+            this.setState({booklist: this.state.booklist.filter(item => item.shelf !== "none")
+            })
+          } else {
+            book.shelf = shelf;
+          }
       })
   }
 
@@ -38,7 +52,7 @@ class App extends React.Component {
         <Route path="/addbook" render={() => (
           <AddBook
             changeShelf={this.changeShelf}
-            booklist={this.booklist}
+            booklist={this.state.booklist}
           />
         )}
         />
@@ -64,7 +78,7 @@ class App extends React.Component {
                 <Shelf
                   category="Finished"
                   changeShelf={this.changeShelf}
-                  shelvedbooks={this.state.booklist.filter(book => book.shelf === "finished")}/>
+                  shelvedbooks={this.state.booklist.filter(book => book.shelf === "read")}/>
             </div>
           </div>
           <div className="open-search">
