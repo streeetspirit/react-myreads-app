@@ -20,28 +20,16 @@ class App extends React.Component {
     .catch(err => {console.log(err)})
   }
 
-  changeShelf(book, shelf) {
+  changeShelf = (book, shelf) => {
+
     BooksAPI.update(book, shelf)
-      .then(response => {
+      .then(BooksAPI.getAll()
+        .then(response => {
+        console.log("getAll ", response)
+        this.setState({booklist: response})
+    })) 
+    .catch(err => {console.log(err)})
 
-        // if the book was not in our shelf - add it
-        if (book.shelf === "none") {
-          book.shelf = shelf
-          this.setState({
-            booklist: this.state.booklist.concat([book])
-          })
-        
-        } else
-
-          // if the book gets 'none' status - remove it from our list
-          if (shelf === "none") {
-            book.shelf = shelf
-            this.setState({booklist: this.state.booklist.filter(item => item.shelf !== "none")
-            })
-          } else {
-            book.shelf = shelf;
-          }
-      })
   }
 
   render() {
