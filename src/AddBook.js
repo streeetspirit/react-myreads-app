@@ -18,8 +18,8 @@ class AddBook extends Component {
     if (query) {
       BooksAPI.search(query)
         .then(response => {
-          console.log(response)
-          console.log(this.props.booklist)
+          // console.log(response)
+          // console.log(this.props.booklist)
           if (response.length>0) {
             response.forEach(newbook => {
               let findExisting = this.props.booklist.find(book => book.id === newbook.id)
